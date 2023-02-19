@@ -1,0 +1,7 @@
+D:\Дипломная работа\Realization\bin\Debug\Realization.exe.config
+D:\Дипломная работа\Realization\bin\Debug\Realization.exe
+D:\Дипломная работа\Realization\bin\Debug\Realization.pdb
+D:\Дипломная работа\Realization\obj\Debug\Realization.csproj.CoreCompileInputs.cache
+D:\Дипломная работа\Realization\obj\Debug\Realization.exe
+D:\Дипломная работа\Realization\obj\Debug\Realization.pdb
+D:\Дипломная работа\Realization\obj\Debug\Realization.csproj.AssemblyReference.cache
