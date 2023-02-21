@@ -50,10 +50,10 @@ namespace Realization
                         //cellularAutomata.Transformation();
                         Console.WriteLine("After dissolution");
                         cellularAutomata.Field_output();
-                        cellularAutomata.Transition_Rule_diffusion(Dt);
+                        //cellularAutomata.Transition_Rule_diffusion(Dt);
                         //cellularAutomata.Transformation();
-                        Console.WriteLine("After diffusion");
-                        cellularAutomata.Field_output();
+                        //Console.WriteLine("After diffusion");
+                        //cellularAutomata.Field_output();
 
                         cellularAutomata.Iteration_Count(ref no_end);
 

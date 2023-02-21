@@ -88,19 +88,32 @@ namespace Realization
                     {
                         double dC;
 
-                        for (int i = x - 1; i <= x + 1; i++)
+                        for (int i =  - 1; i <=  + 1; i++)
                         {
-                            for (int j = y - 1; j <= y + 1; j++)
+                            for (int j =  - 1; j <=  + 1; j++)
                             {
-                                var I = (x + i + Field.GetLength(0)) % Field.GetLength(0);
-                                var J = (y + j + Field.GetLength(1)) % Field.GetLength(1);
+                                //var I = (x + i + Field.GetLength(0)) % Field.GetLength(0);
+                                //var J = (y + j + Field.GetLength(1)) % Field.GetLength(1);
+                                var I = (x + i);
+                                var J = (y + j);
                                 var isSelfChecking = I == x && J == y; 
                                 if (isSelfChecking)
                                     continue;
 
+                                if (I < 0)
+                                    continue;
+                                if (J < 0)
+                                    continue;
+                                if (I >= Field.GetLength(0))
+                                    continue;
+                                if (J >= Field.GetLength(1))
+                                    continue;
+
                                 if (Field[I, J].concentration < Field[x, y].saturated_solution)
                                 {
-                                    if ((I != (x - 1) & J == y) | (I == x & J != (y + 1)) | (I != (x + 1) & J == y) | (I == x & J != (y - 1)))
+                                    //if ((I != (x - 1) & J == y) | (I == x & J != (y + 1)) | (I != (x + 1) & J == y) | (I == x & J != (y - 1)))
+                                    
+
                                     {
                                         if (Field[x, y].saturated_solution > Field[x, y].concentration)
                                         {
@@ -117,7 +130,6 @@ namespace Realization
                                             Field[x, y].concentration -= dC ;
                                             quantity += dC;
                                         }
-
                                     }
                                 }
                             }
@@ -198,7 +210,7 @@ namespace Realization
                         }
                     }
 
-                    else if (Field[x, y].concentration < Field[x, y].saturated_solution && Field[x, y].concentration > (int)(Field[x, y].saturated_solution * 0.1))
+                    else if (Field[x, y].concentration < Field[x, y].saturated_solution && Field[x, y].concentration > 0/*(int)(Field[x, y].saturated_solution * 0.1)*/)
                     {
                         int MinC = (int)(Field[x, y].saturated_solution * 0.3);
                         if (Field[x, y].concentration < MinC)
@@ -227,6 +239,7 @@ namespace Realization
                 Console.WriteLine();
             }
             Console.WriteLine("\n");
+            Console.WriteLine(quantity);
         }
         public void Iteration_Count(ref bool no_end)
         {
