@@ -8,7 +8,7 @@ namespace Realization
 {
     class Cells
     {
-        public int saturated_solution = 250;
+        public int saturated_solution = 30;
         public float x { get; set; }
         public float y { get; set; }
 
