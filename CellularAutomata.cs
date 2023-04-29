@@ -21,6 +21,8 @@ namespace Realization
         public Calculation[,] Field_for_calculation;
 
         public double quantity = 0;
+        public double difference;
+        public List<int> quantityCurve = new List<int>();
 
         static void StartCreate(Cells[,] Field, Calculation[,] Field_for_calculation)
         {
@@ -57,11 +59,11 @@ namespace Realization
 
             Console.WriteLine("Таблеток:" + tablet.NumberOfTablets);
 
-            while (tablet.NumberOfTablets > 0)
-            {
+            //while (tablet.NumberOfTablets > 0)
+            //{
                 intersection_with_other_tablets = false;
-                int X = _random.Next(0, Field.GetLength(0));
-                int Y = _random.Next(0, Field.GetLength(1));
+                int X = 35 /*_random.Next(0, Field.GetLength(0))*/;
+                int Y = 35/*_random.Next(0, Field.GetLength(1))*/;
 
             while (!intersection_with_other_tablets)
             {
@@ -94,7 +96,7 @@ namespace Realization
                     Console.WriteLine(tablet.NumberOfTablets);
                 }
             }
-        }
+        //}
     }
 
     public void Transition_Rule_dissolution(double k)
@@ -151,6 +153,8 @@ namespace Realization
             {
                 for (int y = 0; y < Field.GetLength(1); y++)
                 {
+                    difference = 0;
+                    double recalculation = 0;
                     if (Field[x, y].concentration < Field[x, y].saturated_solution)
                     {
                         double dC;
@@ -171,19 +175,15 @@ namespace Realization
                                         continue;
                                     if (Field[I, J].concentration < Field[x, y].saturated_solution)
                                     {
-                                        if (Field[I, J].concentration > Field[x, y].concentration)
+                                        if (Field[I, J].concentration <Field[x, y].concentration)
                                         {
-                                            dC = constD * (Field[I, J].concentration - Field[x, y].concentration);
+                                            dC = constD * (Field[x, y].concentration - Field[I, J].concentration);
 
-                                            double limitation = Field[I, J].concentration - dC;
+                                            double limitation = Field[x, y].concentration - dC;
 
                                         if (limitation >= 0)
                                         {
-                                            //Field[I, J].concentration -= dC;
-                                            //Field[x, y].concentration += dC;
-                                            Field_for_calculation[I, J].accumulation_concentration = Field_for_calculation[I, J].accumulation_concentration - dC;
-                                            Field_for_calculation[x, y].accumulation_concentration = Field_for_calculation[x, y].accumulation_concentration + dC;
-                                            quantity += dC;
+                                            difference += dC;
                                         }
                                     }
                                     }
@@ -191,8 +191,88 @@ namespace Realization
                             }
                         }
                     }
-                }
-            }
+                    if (Field_for_calculation[x, y].accumulation_concentration - difference < 0)
+                    {
+                        recalculation = Field_for_calculation[x, y].accumulation_concentration / difference;
+
+                        if (Field[x, y].concentration < Field[x, y].saturated_solution)
+                        {
+                            
+                            for (int i = x - 1; i <= x + 1; i++)
+                            {
+                                for (int j = y - 1; j <= y + 1; j++)
+                                {
+                                    var I = (i + Field.GetLength(0)) % Field.GetLength(0);
+                                    var J = (j + Field.GetLength(1)) % Field.GetLength(1);
+
+                                    var isSelfChecking = I == x && J == y;
+                                    if (isSelfChecking)
+                                        continue;
+                                   
+                                    if (Field[I, J].concentration <= 0)
+                                        continue;
+                                    if (Field[I, J].concentration < Field[x, y].saturated_solution)
+                                    {
+                                        if (Field[I, J].concentration < Field[x, y].concentration)
+                                        {
+                                            double dC = constD * (Field[x, y].concentration - Field[I, J].concentration);
+                                            double remainder = dC * recalculation;
+
+                                            Field_for_calculation[x, y].accumulation_concentration = Field_for_calculation[x, y].accumulation_concentration- remainder;
+                                            Field_for_calculation[I, J].accumulation_concentration = Field_for_calculation[I, J].accumulation_concentration+ remainder;
+                                            quantity += remainder;
+                                        }
+                                    }
+                                   
+                                }
+                            }
+                        }   
+                    }
+                    else
+                    {
+                        double dC;
+                       
+                                if (Field[x, y].concentration < Field[x, y].saturated_solution)
+                                {
+
+                                    for (int i = x - 1; i <= x + 1; i++)
+                                    {
+                                        for (int j = y - 1; j <= y + 1; j++)
+                                        {
+                                            var I = (i + Field.GetLength(0)) % Field.GetLength(0);
+                                            var J = (j + Field.GetLength(1)) % Field.GetLength(1);
+
+                                            var isSelfChecking = I == x && J == y;
+                                            if (isSelfChecking)
+                                                continue;
+
+                                            if (Field[I, J].concentration <= 0)
+                                                continue;
+                                            if (Field[I, J].concentration < Field[x, y].saturated_solution)
+                                            {
+
+                                                if (Field[I, J].concentration < Field[x, y].concentration)
+                                                {
+                                                    dC = constD * (Field[x, y].concentration - Field[I, J].concentration);
+
+                                                    double limitation = Field[x, y].concentration - dC;
+
+                                                    if (limitation >= 0)
+                                                    {
+                                                        Field_for_calculation[x, y].accumulation_concentration = Field_for_calculation[x, y].accumulation_concentration - dC;
+                                                        Field_for_calculation[I, J].accumulation_concentration = Field_for_calculation[I, J].accumulation_concentration + dC;
+                                                        quantity += dC;
+                                                    }
+                                                }
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+             
+            
             CurrentGeneration++;
         }
         public void Field_output()
@@ -304,7 +384,11 @@ namespace Realization
                 //        sw.WriteLine(String.Format("{0}|{1}|{2}|", x, y, Field[x, y].Concentration));
                 //    }
                 //}
-                sw.WriteLine(String.Format("{0}|{1}|", (int)quantity, CurrentGeneration));
+                foreach (var i in quantityCurve)
+                {
+                    sw.WriteLine(String.Format("{0}", i));
+                }
+                
 
             }
         }

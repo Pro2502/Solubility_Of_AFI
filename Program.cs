@@ -17,7 +17,7 @@ namespace Realization
         private const int MAXIMIZE = 3;
 
         const double Dt = 0.1;
-        const double k = 0.8;
+        const double k = 0.0001;
         static void Main(string[] args)
         {
             Console.ReadLine();
@@ -53,14 +53,16 @@ namespace Realization
                             cellularAutomata.Transformation();
                             Console.WriteLine("After diffusion");
                             cellularAutomata.Field_output();
+                            cellularAutomata.quantityCurve.Add((int)cellularAutomata.quantity);
 
                             cellularAutomata.Iteration_Count(ref no_end);
-                            cellularAutomata.WriteAutomataToTxt();
-                            cellularAutomata.ReadAutomataTxt();
+                           
+                            //cellularAutomata.ReadAutomataTxt();
 
                     }
                     else
                     {
+                        cellularAutomata.WriteAutomataToTxt();
                         break;
                     }
                     //}
